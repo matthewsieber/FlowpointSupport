@@ -1,0 +1,67 @@
+﻿@model IEnumerable<FlowpointSupportCompany>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Companies</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.VCompanyName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.VCity)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.VProvince)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.VCountry)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.VContact)
+            </th>
+            <th></th>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                <a asp-action="Details" asp-route-id="@item.ICompanyId">@Html.DisplayFor(modelItem => item.VCompanyName)</a>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.VCity)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.VProvince)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.VCountry)
+            </td>
+            <td>
+                <div>@Html.DisplayFor(modelItem => item.VContact)</div>
+                <div>@Html.DisplayFor(modelItem => item.VPhone)</div>
+                <div>@Html.DisplayFor(modelItem => item.VEmail)</div>
+            </td>
+            <td>
+                <a asp-controller="Vendors" asp-action="Index" asp-route-companyid="@item.ICompanyId">Vendors</a>
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.ICompanyId">Edit</a>
+            </td>
+            <td>
+                <a asp-action="Delete" asp-route-id="@item.ICompanyId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

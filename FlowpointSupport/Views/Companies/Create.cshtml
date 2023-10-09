@@ -1,0 +1,83 @@
+﻿@model FlowpointSupport.FlowpointDb.FlowpointSupportCompany
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Flowpoint Support Company</h4>
+<a asp-action="Index">Back</a>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label>Name</label>
+                <input asp-for="VCompanyName" class="form-control" />
+                <span asp-validation-for="VCompanyName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label>Street 1</label>
+                <input asp-for="VStreet1" class="form-control" />
+                <span asp-validation-for="VStreet1" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label>Street 2</label>
+                <input asp-for="VStreet2" class="form-control" />
+                <span asp-validation-for="VStreet2" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label>City</label>
+                <input asp-for="VCity" class="form-control" />
+                <span asp-validation-for="VCity" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label>Province</label>
+                <input asp-for="VProvince" class="form-control" />
+                <span asp-validation-for="VProvince" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label>Postal Code</label>
+                <input asp-for="VPostalCode" class="form-control" />
+                <span asp-validation-for="VPostalCode" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label>Country</label>
+                <input asp-for="VCountry" class="form-control" />
+                <span asp-validation-for="VCountry" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label>Contact</label>
+                <input asp-for="VContact" class="form-control" />
+                <span asp-validation-for="VContact" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label>Phone</label>
+                <input asp-for="VPhone" class="form-control" />
+                <span asp-validation-for="VPhone" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label>Fax</label>
+                <input asp-for="VFax" class="form-control" />
+                <span asp-validation-for="VFax" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input asp-for="VEmail" class="form-control" />
+                <span asp-validation-for="VEmail" class="text-danger"></span>
+            </div>
+            <div>
+                <br/>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
