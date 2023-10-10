@@ -21,28 +21,71 @@ namespace FlowpointSupport.Controllers
 
         // GET: Tickets
         [Route("Vendors/{vendorId:int}/Tickets/")]
-        public async Task<IActionResult> Index(int vendorId)
+        public async Task<IActionResult> Index(int vendorId, int companyId)
         {
             var flowpointContext = _context.FlowpointSupportTickets
                 .Where(fsv => fsv.IVendorId == vendorId &&
                               !fsv.BIsDeleted)
                 .Include(f => f.IVendor);
-            ViewBag.VendorId = vendorId;
+            
             var tickets = await flowpointContext.ToListAsync();
 
-            if (tickets != null &&
-                tickets.Count > 0)
-            {
-                ViewBag.CompanyId = tickets.FirstOrDefault()?.IVendor?.ICompanyId;
-            }
+            ViewBag.CompanyId = companyId;
+            ViewBag.VendorId = vendorId;
 
             return View(tickets);
         }
 
-        // GET: Tickets/Create
-        public IActionResult Create(int vendorId)
+        public async Task<IActionResult> LookupById(string ticketId, int vendorId, int companyId)
         {
-            ViewData["IVendorId"] = new SelectList(_context.FlowpointSupportVendors, "IVendorId", "IVendorName");
+            if (string.IsNullOrWhiteSpace(ticketId))
+            {
+                return RedirectToAction("Index", new { vendorId });
+            }
+
+            int searchTicketId;
+            if (!int.TryParse(ticketId, out searchTicketId))
+            {
+                return Problem($"'{ticketId}' is not a valid Ticket ID");
+            }
+
+            ViewBag.VendorId = vendorId;
+            ViewBag.CompanyId = companyId;
+            return _context.FlowpointSupportTickets != null ?
+                        View("Index", await _context.FlowpointSupportTickets
+                            .Where(fsc => fsc.ITicketId == searchTicketId && !fsc.BIsDeleted)
+                            .ToListAsync()) :
+                        Problem("Entity set 'FlowpointContext.FlowpointSupportTickets'  is null.");
+        }
+
+        public async Task<IActionResult> Search(string searchTerm, int vendorId, int companyId)
+        {
+            if (string.IsNullOrWhiteSpace(searchTerm))
+            {
+                return RedirectToAction("Index", new { vendorId });
+            }
+
+            ViewBag.VendorId = vendorId;
+
+            return _context.FlowpointSupportTickets != null
+                        ? View("Index", (await _context.FlowpointSupportTickets
+                            
+                            .ToListAsync())
+                            .Where(fsv => ( // NOTE: by moving this here, the search terms are being evaluated on the server rather than in the database.
+                                            //       This is only for testing so that it can search & evaluate the user names, which are hard coded into a dictionary
+                                            //       If Users was a real table, it would all be done in the database
+                                            fsv.VTicketMessage.Contains(searchTerm) ||
+                                            Users.NameById[fsv.ICreatedBy].ToLower().Contains(searchTerm.ToLower()) ||
+                                            Users.NameById[fsv.IModifiedBy].ToLower().Contains(searchTerm.ToLower())
+                                          ) &&
+                                          !fsv.BIsDeleted))
+                        : Problem("Entity set 'FlowpointContext.FlowpointSupportTickets' is null.");
+        }
+
+        // GET: Tickets/Create
+        public IActionResult Create(int vendorId, int companyId)
+        {
+            ViewData["IVendorId"] = new SelectList(_context.FlowpointSupportVendors, "IVendorId", "VVendorName");
             ViewBag.VendorId = vendorId;
             return View();
         }
@@ -67,7 +110,7 @@ namespace FlowpointSupport.Controllers
                     vendorId = flowpointSupportTicket.IVendorId
                 });
             }
-            ViewData["IVendorId"] = new SelectList(_context.FlowpointSupportVendors, "IVendorId", "IVendorName", flowpointSupportTicket.IVendorId);
+            ViewData["IVendorId"] = new SelectList(_context.FlowpointSupportVendors, "IVendorId", "VVendorName", flowpointSupportTicket.IVendorId);
             return View(flowpointSupportTicket);
         }
 
@@ -79,13 +122,19 @@ namespace FlowpointSupport.Controllers
                 return NotFound();
             }
 
-            var flowpointSupportTicket = await _context.FlowpointSupportTickets.FindAsync(id);
+            var flowpointSupportTicket = await _context.FlowpointSupportTickets
+                .Include(f => f.IVendor)
+                .FirstOrDefaultAsync(t => t.ITicketId == id);
+
             if (flowpointSupportTicket == null)
             {
                 return NotFound();
             }
-            ViewData["IVendorId"] = new SelectList(_context.FlowpointSupportVendors, "IVendorId", "IVendorName", flowpointSupportTicket.IVendorId);
+
+            ViewData["IVendorId"] = new SelectList(_context.FlowpointSupportVendors, "IVendorId", "VVendorName", flowpointSupportTicket.IVendorId);
+            ViewBag.CompanyId = flowpointSupportTicket.IVendor?.ICompanyId;
             ViewBag.VendorId = flowpointSupportTicket.IVendorId;
+
             return View(flowpointSupportTicket);
         }
 
@@ -131,7 +180,8 @@ namespace FlowpointSupport.Controllers
                     vendorId = flowpointSupportTicket.IVendorId
                 });
             }
-            ViewData["IVendorId"] = new SelectList(_context.FlowpointSupportVendors, "IVendorId", "IVendorName", flowpointSupportTicket.IVendorId);
+
+            ViewData["IVendorId"] = new SelectList(_context.FlowpointSupportVendors, "IVendorId", "VVendorName", flowpointSupportTicket.IVendorId);
             return View(flowpointSupportTicket);
         }
 
@@ -146,11 +196,13 @@ namespace FlowpointSupport.Controllers
             var flowpointSupportTicket = await _context.FlowpointSupportTickets
                 .Include(f => f.IVendor)
                 .FirstOrDefaultAsync(m => m.ITicketId == id);
+
             if (flowpointSupportTicket == null)
             {
                 return NotFound();
             }
 
+            ViewBag.CompanyId = flowpointSupportTicket.IVendor?.ICompanyId;
             ViewBag.VendorId = flowpointSupportTicket.IVendorId;
             return View(flowpointSupportTicket);
         }

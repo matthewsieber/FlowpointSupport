@@ -6,10 +6,31 @@
 
 <h1>Vendors</h1>
 
-<p>
-    <a asp-controller="Companies" asp-action="Index">Back</a> | 
-    <a asp-action="Create" asp-route-companyid="@ViewBag.CompanyId">Add Vendor</a>
-</p>
+<table class="table">
+    <tbody>
+        <tr>
+            <td>
+                <a asp-controller="Companies" asp-action="Index">Back</a> |
+                <a asp-action="Create" asp-route-companyid="@ViewBag.CompanyId">Add Vendor</a>
+            </td>
+            <td>
+                @using (Html.BeginForm("LookupById", "Vendors"))
+                {
+                    <input type="hidden" name="companyId" value="@ViewBag.CompanyId" />
+                    <span>Lookup ID: @Html.TextBox("vendorId") <input type="submit" value="Lookup" /></span>
+                }
+            </td>
+            <td>
+                @using (Html.BeginForm("Search", "Vendors"))
+                {
+                    <input type="hidden" name="companyId" value="@ViewBag.CompanyId" />
+                    <span>Search: @Html.TextBox("searchTerm") <input type="submit" value="Search" /></span>
+                }
+            </td>
+        </tr>
+    </tbody>
+</table>
+
 <table class="table">
     <thead>
         <tr>
@@ -17,7 +38,7 @@
                 @Html.DisplayNameFor(model => model.IVendorId)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.IVendorName)
+                @Html.DisplayNameFor(model => model.VVendorName)
             </th>
             <th></th>
             <th>
@@ -44,7 +65,7 @@
                 @Html.DisplayFor(modelItem => item.IVendorId)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.IVendorName)
+                @Html.DisplayFor(modelItem => item.VVendorName)
             </td>
             <td>
                 <a asp-action="Details" asp-route-id="@item.IVendorId" asp-route-companyid="@item.ICompanyId">Details</a>

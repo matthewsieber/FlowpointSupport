@@ -13,7 +13,7 @@ public partial class FlowpointSupportVendor
 
     [Display(Name = "Vendor Name")]
     [Required(ErrorMessage = "Vendor Name is required")]
-    public string IVendorName { get; set; } = null!;
+    public string VVendorName { get; set; } = null!;
 
     [Display(Name = "Street 1")]
     [Required(ErrorMessage = "Street 1 is required")]

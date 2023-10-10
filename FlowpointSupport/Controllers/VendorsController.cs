@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using FlowpointSupport.FlowpointDb;
 using Humanizer.Localisation.TimeToClockNotation;
+using System.ComponentModel.Design;
 
 namespace FlowpointSupport.Controllers
 {
@@ -30,6 +31,57 @@ namespace FlowpointSupport.Controllers
 
             ViewBag.CompanyId = companyId;
             return View(await flowpointContext.ToListAsync());
+        }
+
+        public async Task<IActionResult> LookupById(string vendorId, int companyId)
+        {
+            if (string.IsNullOrWhiteSpace(vendorId))
+            {
+                return RedirectToAction("Index", new { companyId });
+            }
+
+            int searchVendorId;
+            if (!int.TryParse(vendorId, out searchVendorId))
+            {
+                return Problem($"'{vendorId}' is not a valid Vendor ID");
+            }
+
+            ViewBag.CompanyId = companyId;
+            return _context.FlowpointSupportVendors != null ?
+                        View("Index", await _context.FlowpointSupportVendors
+                            .Where(fsc => fsc.IVendorId == searchVendorId && !fsc.BIsDeleted)
+                            .ToListAsync()) :
+                        Problem("Entity set 'FlowpointContext.FlowpointSupportVendors'  is null.");
+        }
+
+        public async Task<IActionResult> Search(string searchTerm, int companyId)
+        {
+            if (string.IsNullOrWhiteSpace(searchTerm))
+            {
+                return RedirectToAction("Index", new { companyId });
+            }
+
+            ViewBag.CompanyId = companyId;
+
+            // Note: EF Expression Trees do not allow the null propogation operator (?), so using ternary operator instead
+            return _context.FlowpointSupportVendors != null ?
+                        View("Index", await _context.FlowpointSupportVendors
+                            .Where(fsv => (
+                                            fsv.VVendorName.Contains(searchTerm) ||
+                                            fsv.VStreet1.Contains(searchTerm) ||
+                                            (fsv.VStreet2 != null ? fsv.VStreet2.Contains(searchTerm) : false) ||
+                                            (fsv.VCity != null ? fsv.VCity.Contains(searchTerm) : false) ||
+                                            (fsv.VProvince != null ? fsv.VProvince.Contains(searchTerm) : false) ||
+                                            (fsv.VPostalCode != null ? fsv.VPostalCode.Contains(searchTerm) : false) ||
+                                            (fsv.VCountry != null ? fsv.VCountry.Contains(searchTerm) : false) ||
+                                            (fsv.VContact != null ? fsv.VContact.Contains(searchTerm) : false) ||
+                                            (fsv.VPhone != null ? fsv.VPhone.Contains(searchTerm) : false) ||
+                                            (fsv.VFax != null ? fsv.VFax.Contains(searchTerm) : false) ||
+                                            (fsv.VEmail != null ? fsv.VEmail.Contains(searchTerm) : false)
+                                          ) &&
+                                          !fsv.BIsDeleted)
+                            .ToListAsync()) :
+                        Problem("Entity set 'FlowpointContext.FlowpointSupportVendors'  is null.");
         }
 
         // GET: Vendors/Details/5
@@ -65,7 +117,7 @@ namespace FlowpointSupport.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IVendorId,ICompanyId,IVendorName,VStreet1,VStreet2,VCity,VProvince,VPostalCode,VCountry,VContact,VPhone,VFax,VEmail,DtCreated,BIsDeleted")] FlowpointSupportVendor flowpointSupportVendor)
+        public async Task<IActionResult> Create([Bind("IVendorId,ICompanyId,VVendorName,VStreet1,VStreet2,VCity,VProvince,VPostalCode,VCountry,VContact,VPhone,VFax,VEmail,DtCreated,BIsDeleted")] FlowpointSupportVendor flowpointSupportVendor)
         {
             if (ModelState.IsValid)
             {
@@ -104,7 +156,7 @@ namespace FlowpointSupport.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IVendorId,ICompanyId,IVendorName,VStreet1,VStreet2,VCity,VProvince,VPostalCode,VCountry,VContact,VPhone,VFax,VEmail,DtCreated,BIsDeleted")] FlowpointSupportVendor flowpointSupportVendor)
+        public async Task<IActionResult> Edit(int id, [Bind("IVendorId,ICompanyId,VVendorName,VStreet1,VStreet2,VCity,VProvince,VPostalCode,VCountry,VContact,VPhone,VFax,VEmail,DtCreated,BIsDeleted")] FlowpointSupportVendor flowpointSupportVendor)
         {
             if (id != flowpointSupportVendor.IVendorId)
             {

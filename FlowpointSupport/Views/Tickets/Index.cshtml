@@ -6,10 +6,31 @@
 
 <h1>Tickets</h1>
 
-<p>
-    <a asp-controller="Vendors" asp-action="Index" asp-route-companyid="@ViewBag.CompanyId">Back</a> |
-    <a asp-action="Create" asp-route-vendorid="@ViewBag.VendorId">New Ticket</a>
-</p>
+<table class="table">
+    <tbody>
+        <tr>
+            <td>
+                <a asp-controller="Vendors" asp-action="Index" asp-route-companyid="@ViewBag.CompanyId">Back</a> |
+                <a asp-action="Create" asp-route-vendorid="@ViewBag.VendorId">New Ticket</a>
+            </td>
+            <td>
+                @using (Html.BeginForm("LookupById", "Tickets"))
+                {
+                    <input type="hidden" name="vendorId" value="@ViewBag.VendorId" />
+                    <span>Lookup ID: @Html.TextBox("ticketId") <input type="submit" value="Lookup" /></span>
+                }
+            </td>
+            <td>
+                @using (Html.BeginForm("Search", "Tickets"))
+                {
+                    <input type="hidden" name="vendorId" value="@ViewBag.VendorId" />
+                    <span>Search: @Html.TextBox("searchTerm") <input type="submit" value="Search" /></span>
+                }
+            </td>
+        </tr>
+    </tbody>
+</table>
+
 <table class="table">
     <thead>
         <tr>
@@ -48,13 +69,13 @@
                 @Html.DisplayFor(modelItem => item.DtCreatedDate)
             </td>
             <td>
-                @Users.Names[item.ICreatedBy]
+                @Users.NameById[item.ICreatedBy]
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.DtModifiedDate)
             </td>
             <td>
-                @Users.Names[item.IModifiedBy]
+                @Users.NameById[item.IModifiedBy]
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.ITicketId">Edit</a>

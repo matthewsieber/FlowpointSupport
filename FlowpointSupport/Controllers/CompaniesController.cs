@@ -26,6 +26,54 @@ namespace FlowpointSupport.Controllers
                         Problem("Entity set 'FlowpointContext.FlowpointSupportCompanies'  is null.");
         }
 
+        public async Task<IActionResult> LookupById(string companyId)
+        {
+            if (string.IsNullOrWhiteSpace(companyId))
+            {
+                return RedirectToAction("Index");
+            }
+
+            int searchCompanyId;
+             if (!int.TryParse(companyId, out searchCompanyId))
+            {
+                return Problem($"'{companyId}' is not a valid Company ID");
+            }
+
+            return _context.FlowpointSupportCompanies != null ?
+                        View("Index", await _context.FlowpointSupportCompanies
+                            .Where(fsc =>  fsc.ICompanyId == searchCompanyId && !fsc.BIsDeleted)
+                            .ToListAsync()) :
+                        Problem("Entity set 'FlowpointContext.FlowpointSupportCompanies'  is null.");
+        }
+
+        public async Task<IActionResult> Search(string searchTerm)
+        {
+            if (string.IsNullOrWhiteSpace(searchTerm))
+            {
+                return RedirectToAction("Index");
+            }
+
+            // Note: EF Expression Trees do not allow the null propogation operator (?), so using ternary operator instead
+            return _context.FlowpointSupportCompanies != null ?
+                        View("Index", await _context.FlowpointSupportCompanies
+                            .Where(fsc => (
+                                            fsc.VCompanyName.Contains(searchTerm) ||
+                                            fsc.VStreet1.Contains(searchTerm) ||
+                                            (fsc.VStreet2 != null ? fsc.VStreet2.Contains(searchTerm) : false) ||
+                                            (fsc.VCity != null ? fsc.VCity.Contains(searchTerm) : false) ||
+                                            (fsc.VProvince != null ? fsc.VProvince.Contains(searchTerm) : false) ||
+                                            (fsc.VPostalCode != null ? fsc.VPostalCode.Contains(searchTerm) : false) ||
+                                            (fsc.VCountry != null ? fsc.VCountry.Contains(searchTerm) : false) ||
+                                            (fsc.VContact != null ? fsc.VContact.Contains(searchTerm) : false) ||
+                                            (fsc.VPhone != null ? fsc.VPhone.Contains(searchTerm) : false) ||
+                                            (fsc.VFax != null ? fsc.VFax.Contains(searchTerm) : false) ||
+                                            (fsc.VEmail != null ? fsc.VEmail.Contains(searchTerm) : false)
+                                          ) &&
+                                          !fsc.BIsDeleted)
+                            .ToListAsync()) :
+                        Problem("Entity set 'FlowpointContext.FlowpointSupportCompanies'  is null.");
+        }
+
         // GET: Companies/Details/5
         public async Task<IActionResult> Details(int? id)
         {

@@ -115,9 +115,9 @@ public partial class FlowpointContext : DbContext
                 .HasColumnType("datetime")
                 .HasColumnName("dtCreated");
             entity.Property(e => e.ICompanyId).HasColumnName("iCompanyID");
-            entity.Property(e => e.IVendorName)
+            entity.Property(e => e.VVendorName)
                 .HasMaxLength(128)
-                .HasColumnName("iVendorName");
+                .HasColumnName("VVendorName");
             entity.Property(e => e.VCity)
                 .HasMaxLength(128)
                 .HasColumnName("vCity");

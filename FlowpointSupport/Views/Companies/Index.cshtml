@@ -6,9 +6,28 @@
 
 <h1>Companies</h1>
 
-<p>
-    <a asp-action="Create">Add Company</a>
-</p>
+<table class="table">
+    <tbody>
+        <tr>
+            <td>
+                <a asp-action="Create">Add Company</a>
+            </td>
+            <td>
+                @using (Html.BeginForm("LookupById", "Companies"))
+                {
+                    <span>Lookup ID: @Html.TextBox("companyId") <input type="submit" value="Lookup" /></span>
+                }
+            </td>
+            <td>
+                @using (Html.BeginForm("Search", "Companies"))
+                {
+                    <span>Search: @Html.TextBox("searchTerm") <input type="submit" value="Search" /></span>
+                }
+            </td>
+        </tr>
+    </tbody>
+</table>
+
 <table class="table">
     <thead>
         <tr>

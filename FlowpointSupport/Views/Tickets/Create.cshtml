@@ -21,7 +21,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="ICreatedBy" class="control-label"></label>
-                @Html.DropDownList("ICreatedBy", new SelectList(Users.Names, "Key", "Value"))
+                @Html.DropDownList("ICreatedBy", new SelectList(Users.NameById, "Key", "Value"))
             </div>
             <div>
                 <br/>
