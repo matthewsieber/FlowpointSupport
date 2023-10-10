@@ -6,6 +6,7 @@ namespace FlowpointSupport.FlowpointDb;
 
 public partial class FlowpointSupportVendor
 {
+    [Display(Name = "ID")]
     public int IVendorId { get; set; }
 
     public int ICompanyId { get; set; }

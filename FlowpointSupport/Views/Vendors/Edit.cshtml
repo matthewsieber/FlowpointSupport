@@ -5,8 +5,7 @@
 }
 
 <h1>Edit</h1>
-
-<h4>@Model.IVendorName</h4>
+<h4>@Html.DisplayFor(model => model.IVendorName) (ID: @Html.DisplayFor(model => model.IVendorId))</h4>
 <a asp-controller="Vendors" asp-action="Index" asp-route-companyid="@Context.Request.Query["companyid"]">Back</a>
 <hr />
 <div class="row">

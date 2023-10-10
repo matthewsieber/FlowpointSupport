@@ -5,11 +5,10 @@
 }
 
 <h1>Delete</h1>
-
+<h4>@Html.DisplayFor(model => model.IVendorName) (ID: @Html.DisplayFor(model => model.IVendorId))</h4>
+<a asp-controller="Vendors" asp-action="Index" asp-route-companyid="@Context.Request.Query["companyid"]">Back</a>
+<hr />
 <div>
-    <h4>@Html.DisplayFor(model => model.IVendorName)</h4>
-    <a asp-controller="Vendors" asp-action="Index" asp-route-companyid="@Context.Request.Query["companyid"]">Back</a>
-    <hr />
     <dl class="row">
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.VStreet1)

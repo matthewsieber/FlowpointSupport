@@ -7,14 +7,18 @@
 <h1>Companies</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create">Add Company</a>
 </p>
 <table class="table">
     <thead>
         <tr>
             <th>
+                @Html.DisplayNameFor(model => model.ICompanyId)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.VCompanyName)
             </th>
+            <th></th>
             <th>
                 @Html.DisplayNameFor(model => model.VCity)
             </th>
@@ -36,7 +40,13 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                <a asp-action="Details" asp-route-id="@item.ICompanyId">@Html.DisplayFor(modelItem => item.VCompanyName)</a>
+                @Html.DisplayFor(modelItem => item.ICompanyId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.VCompanyName)
+            </td>
+            <td>
+                <a asp-action="Details" asp-route-id="@item.ICompanyId">Details</a>
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.VCity)

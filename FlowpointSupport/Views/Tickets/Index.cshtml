@@ -1,0 +1,68 @@
+﻿@model IEnumerable<FlowpointSupportTicket>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Tickets</h1>
+
+<p>
+    <a asp-controller="Vendors" asp-action="Index" asp-route-companyid="@ViewBag.CompanyId">Back</a> |
+    <a asp-action="Create" asp-route-vendorid="@ViewBag.VendorId">New Ticket</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ITicketId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.VTicketMessage)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DtCreatedDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ICreatedBy)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DtModifiedDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IModifiedBy)
+            </th>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ITicketId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.VTicketMessage)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DtCreatedDate)
+            </td>
+            <td>
+                @Users.Names[item.ICreatedBy]
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DtModifiedDate)
+            </td>
+            <td>
+                @Users.Names[item.IModifiedBy]
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.ITicketId">Edit</a>
+            </td>
+            <td>
+                <a asp-action="Delete" asp-route-id="@item.ITicketId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

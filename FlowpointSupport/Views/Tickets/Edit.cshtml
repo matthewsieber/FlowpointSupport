@@ -1,0 +1,40 @@
+﻿@model FlowpointSupportTicket
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+<h4>Ticket ID: @Html.DisplayFor(model => model.ITicketId)</h4>
+<a asp-controller="Tickets" asp-action="Index" asp-route-vendorid="@ViewBag.VendorId">Back</a>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="ITicketId" />
+            <div class="form-group">
+                <label asp-for="VTicketMessage" class="control-label"></label>
+                <input asp-for="VTicketMessage" class="form-control" />
+                <span asp-validation-for="VTicketMessage" class="text-danger"></span>
+            </div>
+            <div>
+                <br />
+            </div>
+            <div class="form-group">
+                <label asp-for="IModifiedBy" class="control-label"></label>
+                @Html.DropDownList("IModifiedBy", new SelectList(Users.Names, "Key", "Value"))
+            </div>
+            <div>
+                <br/>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
