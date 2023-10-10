@@ -6,10 +6,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using FlowpointSupport.FlowpointDb;
+using Humanizer.Localisation.TimeToClockNotation;
 
 namespace FlowpointSupport.Controllers
 {
-    [Route("Companies/{companyId:int}/Vendors/")]
     public class VendorsController : Controller
     {
         private readonly FlowpointContext _context;
@@ -20,6 +20,7 @@ namespace FlowpointSupport.Controllers
         }
 
         // GET: Vendors
+        [Route("Companies/{companyId:int}/Vendors/")]
         public async Task<IActionResult> Index(int companyId)
         {
             var flowpointContext = _context.FlowpointSupportVendors
@@ -27,14 +28,14 @@ namespace FlowpointSupport.Controllers
                               !fsv.BIsDeleted)
                 .Include(f => f.ICompany);
 
+            ViewBag.CompanyId = companyId;
             return View(await flowpointContext.ToListAsync());
         }
 
         // GET: Vendors/Details/5
-        [Route("Details/{vendorId}")]
-        public async Task<IActionResult> Details(int companyId, int? vendorId)
+        public async Task<IActionResult> Details(int? id)
         {
-            if (vendorId == null || 
+            if (id == null || 
                 _context.FlowpointSupportVendors == null)
             {
                 return NotFound();
@@ -42,7 +43,7 @@ namespace FlowpointSupport.Controllers
 
             var flowpointSupportVendor = await _context.FlowpointSupportVendors
                 .Include(f => f.ICompany)
-                .FirstOrDefaultAsync(m => m.IVendorId == vendorId && !m.BIsDeleted);
+                .FirstOrDefaultAsync(m => m.IVendorId == id && !m.BIsDeleted);
             if (flowpointSupportVendor == null)
             {
                 return NotFound();
@@ -52,10 +53,10 @@ namespace FlowpointSupport.Controllers
         }
 
         // GET: Vendors/Create
-        [Route("Create")]
-        public IActionResult Create()
+        public IActionResult Create(int companyId)
         {
             ViewData["ICompanyId"] = new SelectList(_context.FlowpointSupportCompanies, "ICompanyId", "VCompanyName");
+            ViewBag.CompanyId = companyId;
             return View();
         }
 
@@ -64,29 +65,32 @@ namespace FlowpointSupport.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Route("Create")]
         public async Task<IActionResult> Create([Bind("IVendorId,ICompanyId,IVendorName,VStreet1,VStreet2,VCity,VProvince,VPostalCode,VCountry,VContact,VPhone,VFax,VEmail,DtCreated,BIsDeleted")] FlowpointSupportVendor flowpointSupportVendor)
         {
             if (ModelState.IsValid)
             {
                 _context.Add(flowpointSupportVendor);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToRoute(new
+                {
+                    controller = "Vendors",
+                    action = "Index",
+                    companyId = flowpointSupportVendor.ICompanyId
+                });
             }
             ViewData["ICompanyId"] = new SelectList(_context.FlowpointSupportCompanies, "ICompanyId", "VCompanyName", flowpointSupportVendor.ICompanyId);
             return View(flowpointSupportVendor);
         }
 
         // GET: Vendors/Edit/5
-        [Route("Edit/{vendorId}")]
-        public async Task<IActionResult> Edit(int? vendorId)
+        public async Task<IActionResult> Edit(int? id)
         {
-            if (vendorId == null || _context.FlowpointSupportVendors == null)
+            if (id == null || _context.FlowpointSupportVendors == null)
             {
                 return NotFound();
             }
 
-            var flowpointSupportVendor = await _context.FlowpointSupportVendors.FindAsync(vendorId);
+            var flowpointSupportVendor = await _context.FlowpointSupportVendors.FindAsync(id);
             if (flowpointSupportVendor == null)
             {
                 return NotFound();
@@ -100,10 +104,9 @@ namespace FlowpointSupport.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Route("Edit/{vendorId}")]
-        public async Task<IActionResult> Edit(int vendorId, [Bind("IVendorId,ICompanyId,IVendorName,VStreet1,VStreet2,VCity,VProvince,VPostalCode,VCountry,VContact,VPhone,VFax,VEmail,DtCreated,BIsDeleted")] FlowpointSupportVendor flowpointSupportVendor)
+        public async Task<IActionResult> Edit(int id, [Bind("IVendorId,ICompanyId,IVendorName,VStreet1,VStreet2,VCity,VProvince,VPostalCode,VCountry,VContact,VPhone,VFax,VEmail,DtCreated,BIsDeleted")] FlowpointSupportVendor flowpointSupportVendor)
         {
-            if (vendorId != flowpointSupportVendor.IVendorId)
+            if (id != flowpointSupportVendor.IVendorId)
             {
                 return NotFound();
             }
@@ -126,24 +129,28 @@ namespace FlowpointSupport.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToRoute(new
+                {
+                    controller = "Vendors",
+                    action = "Index",
+                    companyId = flowpointSupportVendor.ICompanyId
+                });
             }
             ViewData["ICompanyId"] = new SelectList(_context.FlowpointSupportCompanies, "ICompanyId", "VCompanyName", flowpointSupportVendor.ICompanyId);
             return View(flowpointSupportVendor);
         }
 
         // GET: Vendors/Delete/5
-        [Route("Delete/{vendorId}")]
-        public async Task<IActionResult> Delete(int? vendorId)
+        public async Task<IActionResult> Delete(int? id)
         {
-            if (vendorId == null || _context.FlowpointSupportVendors == null)
+            if (id == null || _context.FlowpointSupportVendors == null)
             {
                 return NotFound();
             }
 
             var flowpointSupportVendor = await _context.FlowpointSupportVendors
                 .Include(f => f.ICompany)
-                .FirstOrDefaultAsync(m => m.IVendorId == vendorId);
+                .FirstOrDefaultAsync(m => m.IVendorId == id);
             if (flowpointSupportVendor == null)
             {
                 return NotFound();
@@ -155,21 +162,28 @@ namespace FlowpointSupport.Controllers
         // POST: Vendors/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Route("Delete/{vendorId}")]
-        public async Task<IActionResult> DeleteConfirmed(int vendorId)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (_context.FlowpointSupportVendors == null)
             {
                 return Problem("Entity set 'FlowpointContext.FlowpointSupportVendors'  is null.");
             }
-            var flowpointSupportVendor = await _context.FlowpointSupportVendors.FindAsync(vendorId);
-            if (flowpointSupportVendor != null)
+            var flowpointSupportVendor = await _context.FlowpointSupportVendors.FindAsync(id);
+
+            if (flowpointSupportVendor == null)
             {
-                _context.FlowpointSupportVendors.Remove(flowpointSupportVendor);
+                return Problem("Entity 'FlowpointContext.FlowpointSupportVendor' is null.");
             }
 
+            flowpointSupportVendor.BIsDeleted = true;
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+
+            return RedirectToRoute(new
+            {
+                controller = "Vendors",
+                action = "Index",
+                companyId = flowpointSupportVendor.ICompanyId
+            });
         }
 
         private bool FlowpointSupportVendorExists(int id)

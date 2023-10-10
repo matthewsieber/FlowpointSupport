@@ -7,15 +7,10 @@
 <h1>Details</h1>
 
 <div>
-    <h4>FlowpointSupportVendor</h4>
+    <h4>@Html.DisplayNameFor(model => model.IVendorName)</h4>
+    <a asp-controller="Vendors" asp-action="Index" asp-route-companyid="@Context.Request.Query["companyid"]">Back</a>
     <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IVendorName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IVendorName)
-        </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.VStreet1)
         </dt>
@@ -82,21 +77,8 @@
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.DtCreated)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.BIsDeleted)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.BIsDeleted)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ICompany)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ICompany.VCompanyName)
-        </dd>
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.IVendorId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Edit" asp-route-id="@Model?.IVendorId" asp-route-companyid="@Context.Request.Query["companyid"]">Edit</a>
 </div>

@@ -62,5 +62,5 @@ public partial class FlowpointSupportVendor
 
     public virtual ICollection<FlowpointSupportTicket> FlowpointSupportTickets { get; set; } = new List<FlowpointSupportTicket>();
 
-    public virtual FlowpointSupportCompany ICompany { get; set; } = null!;
+    public virtual FlowpointSupportCompany? ICompany { get; set; } = null!;
 }

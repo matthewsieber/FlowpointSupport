@@ -6,18 +6,14 @@
 
 <h1>Edit</h1>
 
-<h4>FlowpointSupportVendor</h4>
+<h4>@Model.IVendorName</h4>
+<a asp-controller="Vendors" asp-action="Index" asp-route-companyid="@Context.Request.Query["companyid"]">Back</a>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="IVendorId" />
-            <div class="form-group">
-                <label asp-for="ICompanyId" class="control-label"></label>
-                <select asp-for="ICompanyId" class="form-control" asp-items="ViewBag.ICompanyId"></select>
-                <span asp-validation-for="ICompanyId" class="text-danger"></span>
-            </div>
             <div class="form-group">
                 <label asp-for="IVendorName" class="control-label"></label>
                 <input asp-for="IVendorName" class="form-control" />
@@ -73,25 +69,15 @@
                 <input asp-for="VEmail" class="form-control" />
                 <span asp-validation-for="VEmail" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="DtCreated" class="control-label"></label>
-                <input asp-for="DtCreated" class="form-control" />
-                <span asp-validation-for="DtCreated" class="text-danger"></span>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="BIsDeleted" /> @Html.DisplayNameFor(model => model.BIsDeleted)
-                </label>
+            <div>
+                <br/>
             </div>
             <div class="form-group">
+                <input type="hidden" asp-for="ICompanyId" />
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {
