@@ -5,9 +5,9 @@
 }
 
 <h1>Edit</h1>
-<h4>Ticket ID: @Html.DisplayFor(model => model.ITicketId)</h4>
 <a asp-controller="Tickets" asp-action="Index" asp-route-companyid="@ViewBag.CompanyId" asp-route-vendorid="@ViewBag.VendorId">Back</a>
 <hr />
+<h4>Ticket ID: @Html.DisplayFor(model => model.ITicketId)</h4>
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Edit">
