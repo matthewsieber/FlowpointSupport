@@ -22,7 +22,7 @@ public partial class FlowpointContext : DbContext
     public virtual DbSet<FlowpointSupportVendor> FlowpointSupportVendors { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("Data Source=LITTERBOX\\DEV_SERVER;Initial Catalog=Flowpoint;Trusted_Connection=true;Integrated Security=true;TrustServerCertificate=true");
+    { }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
