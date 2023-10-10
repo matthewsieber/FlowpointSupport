@@ -21,7 +21,6 @@ namespace FlowpointSupport.Controllers
         }
 
         // GET: Vendors
-        [Route("Companies/{companyId:int}/Vendors/")]
         public async Task<IActionResult> Index(int companyId)
         {
             var flowpointContext = _context.FlowpointSupportVendors

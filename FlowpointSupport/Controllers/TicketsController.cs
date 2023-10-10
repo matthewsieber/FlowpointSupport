@@ -20,7 +20,6 @@ namespace FlowpointSupport.Controllers
         }
 
         // GET: Tickets
-        [Route("Vendors/{vendorId:int}/Tickets/")]
         public async Task<IActionResult> Index(int vendorId, int companyId)
         {
             var flowpointContext = _context.FlowpointSupportTickets
@@ -40,7 +39,7 @@ namespace FlowpointSupport.Controllers
         {
             if (string.IsNullOrWhiteSpace(ticketId))
             {
-                return RedirectToAction("Index", new { vendorId });
+                return RedirectToAction("Index", new { vendorId, companyId });
             }
 
             int searchTicketId;
@@ -49,8 +48,9 @@ namespace FlowpointSupport.Controllers
                 return Problem($"'{ticketId}' is not a valid Ticket ID");
             }
 
-            ViewBag.VendorId = vendorId;
             ViewBag.CompanyId = companyId;
+            ViewBag.VendorId = vendorId;
+            
             return _context.FlowpointSupportTickets != null ?
                         View("Index", await _context.FlowpointSupportTickets
                             .Where(fsc => fsc.ITicketId == searchTicketId && !fsc.BIsDeleted)
@@ -62,9 +62,10 @@ namespace FlowpointSupport.Controllers
         {
             if (string.IsNullOrWhiteSpace(searchTerm))
             {
-                return RedirectToAction("Index", new { vendorId });
+                return RedirectToAction("Index", new { vendorId, companyId });
             }
 
+            ViewBag.CompanyId = companyId;
             ViewBag.VendorId = vendorId;
 
             return _context.FlowpointSupportTickets != null
@@ -86,7 +87,10 @@ namespace FlowpointSupport.Controllers
         public IActionResult Create(int vendorId, int companyId)
         {
             ViewData["IVendorId"] = new SelectList(_context.FlowpointSupportVendors, "IVendorId", "VVendorName");
+
+            ViewBag.CompanyId = companyId;
             ViewBag.VendorId = vendorId;
+
             return View();
         }
 
@@ -95,7 +99,7 @@ namespace FlowpointSupport.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ITicketId,IVendorId,VTicketMessage,DtCreatedDate,DtModifiedDate,ICreatedBy,IModifiedBy,BIsDeleted")] FlowpointSupportTicket flowpointSupportTicket)
+        public async Task<IActionResult> Create([Bind("ITicketId,IVendorId,VTicketMessage,DtCreatedDate,DtModifiedDate,ICreatedBy,IModifiedBy,BIsDeleted")] FlowpointSupportTicket flowpointSupportTicket, int companyId)
         {
             if (ModelState.IsValid)
             {
@@ -103,14 +107,16 @@ namespace FlowpointSupport.Controllers
                 flowpointSupportTicket.DtModifiedDate = flowpointSupportTicket.DtCreatedDate;
                 _context.Add(flowpointSupportTicket);
                 await _context.SaveChangesAsync();
-                return RedirectToRoute(new
-                {
-                    controller = "Tickets",
-                    action = "Index",
-                    vendorId = flowpointSupportTicket.IVendorId
-                });
+                
+                return RedirectToAction("Index", new 
+                    { 
+                        vendorId = flowpointSupportTicket.IVendorId,
+                        companyId
+                    });
             }
+
             ViewData["IVendorId"] = new SelectList(_context.FlowpointSupportVendors, "IVendorId", "VVendorName", flowpointSupportTicket.IVendorId);
+
             return View(flowpointSupportTicket);
         }
 
@@ -143,7 +149,7 @@ namespace FlowpointSupport.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ITicketId,VTicketMessage,IModifiedBy")] FlowpointSupportTicket updatedTicket)
+        public async Task<IActionResult> Edit(int id, [Bind("ITicketId,VTicketMessage,IModifiedBy")] FlowpointSupportTicket updatedTicket, int companyId)
         {
             if (id != updatedTicket.ITicketId)
             {
@@ -173,12 +179,11 @@ namespace FlowpointSupport.Controllers
                     }
                 }
 
-                return RedirectToRoute(new
-                {
-                    controller = "Tickets",
-                    action = "Index",
-                    vendorId = flowpointSupportTicket.IVendorId
-                });
+                return RedirectToAction("Index", new
+                    {
+                        companyId,
+                        vendorId = flowpointSupportTicket.IVendorId
+                    });
             }
 
             ViewData["IVendorId"] = new SelectList(_context.FlowpointSupportVendors, "IVendorId", "VVendorName", flowpointSupportTicket.IVendorId);
@@ -204,13 +209,14 @@ namespace FlowpointSupport.Controllers
 
             ViewBag.CompanyId = flowpointSupportTicket.IVendor?.ICompanyId;
             ViewBag.VendorId = flowpointSupportTicket.IVendorId;
+
             return View(flowpointSupportTicket);
         }
 
         // POST: Tickets/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int id, int companyId)
         {
             if (_context.FlowpointSupportTickets == null)
             {
@@ -225,12 +231,11 @@ namespace FlowpointSupport.Controllers
             flowpointSupportTicket.BIsDeleted = true;
             await _context.SaveChangesAsync();
 
-            return RedirectToRoute(new
-            {
-                controller = "Tickets",
-                action = "Index",
-                vendorId = flowpointSupportTicket.IVendorId
-            });
+            return RedirectToAction("Index", new
+                {
+                    companyId,
+                    vendorId = flowpointSupportTicket.IVendorId
+                });
         }
 
         private bool FlowpointSupportTicketExists(int id)
